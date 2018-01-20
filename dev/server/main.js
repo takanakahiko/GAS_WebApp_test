@@ -1,5 +1,5 @@
-var hello = require('./../lib//hello');
+import hello from './../lib/hello'
 
 global.callHello = () => {
-    Logger.log(hello('takanakahiko '));
+    Logger.log(hello('takanakahiko '))
 }

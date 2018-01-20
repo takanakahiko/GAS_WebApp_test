@@ -4,6 +4,7 @@ import source from 'vinyl-source-stream'
 import transform from 'vinyl-transform'
 import runSequence from 'run-sequence'
 import path from 'path'
+import mocha from 'gulp-mocha';
 import plumber from 'gulp-plumber';
 import inline from 'gulp-inline'
 import browserify from 'browserify'
@@ -25,10 +26,10 @@ gulp.task('gas-upload', ['build-server', 'build-ui'], () =>
 
 gulp.task('test', () =>
   gulp.src([path.join(path_test,'*.js')], { read: false })
-    .pipe($.mocha({ reporter: 'spec' }))
+    .pipe(mocha({ reporter: 'spec' }))
 )
 
-gulp.task('build-server', ['test'], () =>{
+gulp.task('build-server', ['test'], () =>
   gulp.src(path.join(path_server,'*.js'))
   .pipe(plumber())
   .pipe(transform(
@@ -39,20 +40,25 @@ gulp.task('build-server', ['test'], () =>{
       .bundle()
   ))
   .pipe(gulp.dest(path_dist))
-})
+)
 
-gulp.task('build-ui', ['test'], () => {
+gulp.task('build-ui', ['test'], () => 
   gulp.src(path.join(path_ui,'*.html'))
   .pipe(inline({
     base: path_ui,
     js: [
       plumber(),
-      transform((f)=>browserify(f).transform('babelify').bundle()),
+      transform(
+        (f)=>
+          browserify(f)
+          .transform('babelify')
+          .bundle()
+      ),
       uglify
     ]
   }))
-  .pipe(gulp.dest(path_dist));
-})
+  .pipe(gulp.dest(path_dist))
+)
 
 gulp.task('watch', () =>
   gulp.watch(
